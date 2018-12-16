@@ -22,7 +22,7 @@ pip3 install -r requirements.txt
 На данный момент реализовано открытие файлов только с использованием абсолютного пути:  
 Пример:
 ```bash
-./run.sh [/home/user/programm/text.csv] [/home/user/programm/text.xls]
+./run.sh /home/user/programm/text.csv /home/user/programm/text.xls
 ```
 
 ## License
