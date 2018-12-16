@@ -4,7 +4,7 @@
 
 ## Установка
 
-Используйте пакетный менеджер [pip](https://pip.pypa.io/en/stable/) для установки всех необходимых пакетов.
+Используйте пакетный менеджер [pip3](https://pip.pypa.io/en/stable/) для установки всех необходимых пакетов.
 ```bash
 git clone https://github.com/TexnoMann/csvToXlsTable.git
 ```
