@@ -40,6 +40,7 @@ class PlaneManager():
                 else: hours=2
                 if hours !=0:
                     self.__addPlanPoint(data[i][1],data[i][7],hours)
+                    print([data[i][1],data[i][7],hours])
                     self.__countFieldinPlan+=1
 
     def writePlanPointsinTable(self):
