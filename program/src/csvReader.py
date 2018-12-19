@@ -7,6 +7,11 @@ class csvReader():
         self.__headNames=['code','name', 'department', 'lections', 'labs', 'practice', 'homework', 'examination']
 
     def csvReadInList(self):
-
-        df=pd.read_csv(self.__filename, sep=';', header=0).values
+        df=[]
+        try:
+            print("Reading csv file:", self.__filename)
+            df=pd.read_csv(self.__filename, sep=';', header=0).values
+        except FileNotFoundError:
+            print("ERROR: Csv file not found")
+            exit()
         return df

@@ -12,13 +12,17 @@ class PlaneManager():
         self.__reader=csvReader(csvName)
         self.__table=XLSTable(xlsName)
         self.__countFieldinPlan=0
+        self.__groupCount=0
 
     def createTemplate(self):
         self.__table.initFillTables()
 
-    def __addNewGroup(self, groupName):
-        if not self__discDict[groupName]:
-            self.__discDict[groupName]=[]
+    def addGroups(self, groupNameList):
+        self.__table.writeRectDataInTable([groupNameList],3,self.__groupCount+4,0)
+        for g in groupNameList:
+            self.__discDict[g]=[]
+            self.__groupCount+=1
+
 
     def __addPlanPoint(self,discName, type, plan):
         self.__discDict['Disc'].append(discName)
@@ -26,8 +30,8 @@ class PlaneManager():
         self.__discDict['Plan'].append(plan)
 
     def getPlanPointOfSCV(self):
-        print("Add lessons in plan:")
         data=self.__reader.csvReadInList()
+        print("Add lessons in plan:")
         for i in range(0,len(data)):
             if not(data[i][2] in self.__discDict['Disc']):
                 for j in range(3,6):
