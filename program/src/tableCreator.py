@@ -38,28 +38,28 @@ class XLSTable():
     def setFontStyle(self, font, nrow, ncolumn, numbersheet):
         self.__sheets[numbersheet].cell(row=nrow, column=ncolumn).font=font
 
-    def autoFitDimmensionsCollumn(self, numbersheet):
+    def autoFitDimmensionsCollumn(self, numbersheet,ignorecolumns=[]):
         for col in self.__sheets[numbersheet].columns:
             max_length = 0
             column = col[0].column
-            for cell in col:
-                if cell.coordinate in self.__sheets[numbersheet].merged_cells:
-                    if len(str(cell.value)) > max_length:
-                        max_length=len(str(cell.value))
-                        adjusted_width = (max_length + 2) * 1.2*0.5
-                        self.__sheets[numbersheet].column_dimensions[column].width = adjusted_width
-                        continue
-                try:
-                    if len(str(cell.value)) > max_length:
-                        max_length = len(str(cell.value))
-                except:
-                    pass
-            adjusted_width = (max_length + 2) * 1.2
-            self.__sheets[numbersheet].column_dimensions[column].width = adjusted_width
-
+            if not column in ignorecolumns:
+                for cell in col:
+                    if cell.coordinate in self.__sheets[numbersheet].merged_cells:
+                        if len(str(cell.value)) > max_length:
+                            max_length=len(str(cell.value))
+                            adjusted_width = (max_length + 2) * 1.2*0.5
+                            self.__sheets[numbersheet].column_dimensions[column].width = adjusted_width
+                            continue
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(str(cell.value))
+                    except:
+                        pass
+                adjusted_width = (max_length + 2) * 1.2
+                self.__sheets[numbersheet].column_dimensions[column].width = adjusted_width
 
     def makeBoldFontforColumn(self, numbersheet, numbercolumns):
-        for i in range(0,1000):
+        for i in range(0,self.__sheets[numbersheet].max_column):
             for j in numbercolumns:
                 self.__sheets[numbersheet].cell(row=i+1,column=j).font=self.__standartFont_bold
 
@@ -101,3 +101,32 @@ class XLSTable():
         self.makeBoldFontforRow(0,[1,2,3])
         self.makeBoldFontforRow(1,[1])
         self.makeBoldFontforRow(2,[1,5])
+
+    def getMaxTableSize(self, numbersheet):
+        maxR=0
+        maxC=0
+        for i in range(1,self.__sheets[numbersheet].max_row+1):
+            for j in range(1,self.__sheets[numbersheet].max_column+1):
+                p=self.__sheets[numbersheet].cell(row=i,column=j).value
+                if(p!=None):
+                    maxR=i
+                    maxC=j
+        return [maxR,maxC]
+
+    def getHeadTable(self,numbersheet):
+        countC=self.getMaxTableSize(numbersheet)[1]
+        return self.getSquareDataOfTable(numbersheet,[1,1],[1,countC])[0]
+
+    def getSquareDataOfTable(self,numbersheet,startP,finishP):
+        data=[]
+        for i in range(startP[0],finishP[0]+1):
+            row=[]
+            for j in range(startP[1], finishP[1]+1):
+                p=self.__sheets[numbersheet].cell(row=i,column=j).value
+                row.append(p)
+            data.append(copy(row))
+        return copy(data)
+
+    def getColumnNumberwithHeadName(self,numbersheet, colName):
+        head=self.getHeadTable(numbersheet)
+        return head.index(colName)+1

@@ -16,19 +16,30 @@ def checkFileExtension(name, extension):
         filename=name+extension
     return filename
 
-
 argv=sys.argv
-groups=argv[3:]
+
+flag=False
+curflag=""
+groups=[]
+for a in argv:
+    if a[0]=="-" or a[0]=="--":
+        flag=True
+        curflag=a
+        continue
+    if curflag=="-g" or curflag=="--groups":
+        groups.append(a)
+
+
 
 print("Add groups: "+ str(groups))
 
 filenamecsv=getAbsolutePathforFile(checkFileExtension(argv[1],".csv"))
 filenamexlsx=getAbsolutePathforFile(checkFileExtension(argv[2],".xlsx"))
-
 planeM=PlaneManager(filenamecsv,filenamexlsx)
 planeM.createTemplate()
 planeM.addGroups(groups)
 planeM.getPlanPointOfSCV()
 planeM.writePlanPointsinTable()
+planeM.addFormulsforLessonsinPlanOfList()
 planeM.makeHumanReadable()
 planeM.savePlane()

@@ -1,6 +1,7 @@
 from csvReader import *
 from tableCreator import *
 from math import *
+import string
 
 class PlaneManager():
 
@@ -13,15 +14,18 @@ class PlaneManager():
         self.__table=XLSTable(xlsName)
         self.__countFieldinPlan=0
         self.__groupCount=0
+        self.__groups_col={}
+        self.__groupRowConst=3
+        self.__columnSymbolEqualsNumber=list(string.ascii_uppercase)
 
     def createTemplate(self):
         self.__table.initFillTables()
 
     def addGroups(self, groupNameList):
         self.__table.writeRectDataInTable([groupNameList],3,self.__groupCount+4,0)
-        for g in groupNameList:
-            self.__discDict[g]=[]
-            self.__groupCount+=1
+        for i in range(0,len(groupNameList)):
+            self.__groups_col[groupNameList[i]]=i+self.__groupCount+4
+        self.__groupCount+=len(groupNameList)
 
 
     def __addPlanPoint(self,discName, type, plan):
@@ -57,6 +61,25 @@ class PlaneManager():
         self.__table.saveInFile()
 
     def makeHumanReadable(self):
-        self.__table.autoFitDimmensionsCollumn(0)
+        self.__table.autoFitDimmensionsCollumn(0,list(map(lambda x: self.__columnSymbolEqualsNumber[x-1],list(self.__groups_col.values()))))
         self.__table.autoFitDimmensionsCollumn(1)
         self.__table.autoFitDimmensionsCollumn(2)
+
+    def addFormulsforLessonsinPlanOfList(self):
+        print("Добавленно предметов в план: " + str(self.__countFieldinPlan))
+        grouplist=list(self.__groups_col.keys())
+        for g in grouplist:
+            ncol=self.__groups_col[g]
+            scol=self.__columnSymbolEqualsNumber[ncol-1]
+            cellIndexForGroupName=str(scol)+"$"+str(self.__groupRowConst)
+            for j in range(self.__groupRowConst+1,self.__groupRowConst+self.__countFieldinPlan+1):
+                formuls="=2*COUNTIFS(Расписание!$E$2:$E$10000,\'Сводная страница\'!$A" +str(j)+",Расписание!$I$2:$I$10000,\'Сводная страница\'!"+cellIndexForGroupName+",Расписание!$F$2:$F$10000,\'Сводная страница\'!$B"+str(j)
+                dataCell=[[formuls]]
+                self.__table.writeRectDataInTable(dataCell,j,ncol,0)
+    def getGroupColumn(self, groupName):
+        try:
+            col=self.__groups_col[groupName]
+        except KeyError:
+            print("Not found in table group", groupName)
+            exit()
+        return col
